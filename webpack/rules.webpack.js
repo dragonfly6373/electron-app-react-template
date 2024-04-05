@@ -6,6 +6,7 @@ module.exports = [
   {
     test: /\.(m?js|node)$/,
     parser: { amd: false },
+    exclude: /node_modules/,
     use: {
       loader: '@marshallofsound/webpack-asset-relocator-loader',
       options: {
@@ -26,5 +27,12 @@ module.exports = [
     options: {
       name: '[path][name].[ext]',
     },
+  },
+  {
+    test: /\.svg$/,
+    use: [
+      '@svgr/webpack',
+      'url-loader'
+    ]
   }
 ]

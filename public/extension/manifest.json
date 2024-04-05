@@ -1,0 +1,23 @@
+{
+    "manifest_version": 2,
+    "name": "Only One Page",
+    "version": "1.0",
+
+    "description": "Prevent browser open same the same web-site twice",
+    "homepage_url": "https://google.com",
+    "icons": {
+        "48": "icons/icon-one_48.jpeg",
+        "96": "icons/icon-one_96.jpeg"
+    },
+    "background": {
+        "scripts": ["background.js"],
+        "persistent": false
+    },
+    "permissions": ["activeTab", "tabs", "<all_urls>", "storage"],
+    "browser_action": {
+        "default_icon": "icons/icon-one.jpeg",
+        "default_title": "Only One Page",
+        "default_popup": "popup/index.html"
+    },
+    "web_accessible_resources": []
+}

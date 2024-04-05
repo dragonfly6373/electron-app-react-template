@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <script defer src="./script.js"></script>
+        <style>
+            .flex-row { display: flex; }
+            .flex-column { display: flex; flex-flow: column; }
+            #txtInputUrl { flex: 1; }
+        </style>
+    </head>
+    <body>
+        <h3>Prevent User open same web-app twice</h3>
+        <div class="flex-row">
+            <input type="text" id="txtInputUrl" placeholder="input your URL pattern" />
+            <input type="button" id="btnSave" value="Save" />
+        </div>
+    </body>
+</html>

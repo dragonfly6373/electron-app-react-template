@@ -6,7 +6,7 @@ export const api = {
    * so they can interact with the main (electron) side
    * without security problems.
    *
-   * The function below can accessed using `window.Main.sendMessage`
+   * The function below can accessed using `window.ipc.sendMessage`
    */
 
   sendMessage: (message: string) => {
@@ -21,4 +21,4 @@ export const api = {
   }
 }
 
-contextBridge.exposeInMainWorld('Main', api)
+contextBridge.exposeInMainWorld('ipc', api)
