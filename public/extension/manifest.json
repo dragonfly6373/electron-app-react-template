@@ -1,23 +1,24 @@
 {
-    "manifest_version": 2,
+    "manifest_version": 3,
+    "version": "1.0.0",
     "name": "Only One Page",
-    "version": "1.0",
 
     "description": "Prevent browser open same the same web-site twice",
     "homepage_url": "https://google.com",
     "icons": {
-        "48": "icons/icon-one_48.jpeg",
-        "96": "icons/icon-one_96.jpeg"
+        "48": "icons/icon-one_48.png",
+        "96": "icons/icon-one_96.png"
     },
+    "host_permissions": ["https://docs.fedoraproject.org/*", "http://locahost:3000/*", "http://127.0.0.1:3000/*"],
+    "permissions": ["activeTab", "tabs", "storage"],
     "background": {
-        "scripts": ["background.js"],
-        "persistent": false
+      "service_worker": "background.js",
+      "type": "module"
     },
-    "permissions": ["activeTab", "tabs", "<all_urls>", "storage"],
-    "browser_action": {
-        "default_icon": "icons/icon-one.jpeg",
+    "action": {
         "default_title": "Only One Page",
-        "default_popup": "popup/index.html"
+        "default_popup": "popup/index.html",
+        "default_icon": "icons/icon-one_48.png"
     },
     "web_accessible_resources": []
 }

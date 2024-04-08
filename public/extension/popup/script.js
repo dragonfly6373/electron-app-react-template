@@ -1,3 +1,5 @@
+var browser = chrome;
+
 function saveUrl(value) {
     console.log("# save url_pattern", value);
     browser.storage.local.set({url_pattern: value});

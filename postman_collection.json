@@ -1,0 +1,117 @@
+{
+	"info": {
+		"_postman_id": "aa1b8e97-0589-408e-b4fc-8e8cc4b9681a",
+		"name": "Electron Server",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "21008229"
+	},
+	"item": [
+		{
+			"name": "Post Sample Success Data",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"timestamp\": \"2024-03-28T03:32:36.234Z\", // Mốc thời gian\n  \"success\": { // Dữ liệu trả về khi thành công\n    \"personalData\": { // Thông tin dữ liệu CCCD\n      \"mrz\": \"string\", // Mã MRZ\n      \"cardNumber\": \"string\", // Số CCCD\n      \"fullName\": \"string\", // Họ và tên\n      \"dateOfBirth\": \"string\", // Ngày sinh\n      \"sex\": \"string\", // Giới tính\n      \"nationality\": \"string\", // Quốc tịch\n      \"ethnicity\": \"string\", // Dân tộc\n      \"religion\": \"string\", // Tôn giáo\n      \"placeOfOrigin\": \"string\", // Quê quán\n      \"placeOfResidence\": \"string\", // Thường trú\n      \"personalIdentification\": \"string\", // Đặc điểm nhận dạng\n      \"dateOfIssue\": \"string\", // Ngày cấp CCCD\n      \"dateOfExpiry\": \"string\", // Ngày hết hạn CCCD\n      \"fatherName\": \"string\", // Họ tên cha\n      \"motherName\": \"string\", // Họ tên mẹ\n      \"spouseName\": \"string\", // Họ tên vợ/chồng\n      \"oldCardNumber\": \"string\", // Số CMND cũ\n      \"cardFontImage\": \"base64\", // Ảnh chụp mặt trước CCCD\n      \"cardBackImage\": \"base64\", // Ảnh chụp mặt sau CCCD\n      \"originalImage\": \"base64\", // Ảnh gốc lưu trong CCCD\n      \"capturedImage\": \"base64\" // Ảnh chụp trực tiếp để đối sánh\n    },\n    \"validation\": { // Thông tin kiểm tra dữ liệu\n      \"id\": \"string\", // Id xác thực (dùng để đối soát)\n      \"createdDate\": \"2024-03-28T03:32:36.234Z\", // Thời gian thực hiện xác thực\n      \"cardIntegrityResult\": \"Boolean\", // Kết quả kiểm tra toàn vẹn dữ liệu (`true` hoặc `false` nếu đã kiểm tra, `null` nếu chưa thực hiện)\n      \"cardIntegrityMessage\": \"string\", // Mô tả kết quả kiểm tra toàn vẹn dữ liệu\n      \"cardLegitimacyResult\": \"Boolean\", // Kết quả kiểm tra với BCA (`true` hoặc `false` nếu đã kiểm tra, `null` nếu chưa thực hiện)\n      \"cardLegitimacyMessage\": \"string\", // Mô tả kết quả kiểm tra với BCA\n      \"faceCompareResult\": \"Boolean\", // Kết quả kiểm tra so sánh khuôn mặt (`true` hoặc `false` nếu đã kiểm tra, `null` nếu chưa thực hiện)\n      \"faceCompareMessage\": \"string\", // Mô tả kết quả kiểm tra so sánh khuôn mặt\n      \"faceCompareAccuracy\": \"float\", // Tỉ lệ % trùng khớp khuôn mặt (0 ~ 100)\n      \"faceLivenessResult\": \"Boolean\", // Kết quả kiểm tra người thật (`true` hoặc `false` nếu đã kiểm tra, `null` nếu chưa thực hiện)\n      \"faceLivenessMessage\": \"string\" // Mô tả kết quả kiểm tra người thật\n    },\n    \"session\": {\n      \"clientName\": \"string\", // Tên ứng dụng CICClient\n      \"deviceName\": \"string\", // Tên thiết bị đọc thẻ\n      \"deviceSerial\": \"string\" // Mã serial thiết bị đọc thẻ\n    }\n  }\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{domain}}/users",
+					"host": [
+						"{{domain}}"
+					],
+					"path": [
+						"users"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Post Nghia Data",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"timestamp\": \"2024-03-28T03:32:36.234Z\",\n  \"success\": {\n    \"validationData\": {\n      \"id\": \"4ccb6a15-70d5-4bda-ab33-b436f3b2a57f\",\n      \"cardIntegrityResult\": true,\n      \"cardIntegrityMessage\": null,\n      \"cardLegitimacyResult\": true,\n      \"cardLegitimacyMessage\": \"Xác minh thành công\",\n      \"faceCompareResult\": null,\n      \"faceCompareMessage\": null,\n      \"faceCompareAccuracy\": null,\n      \"faceLivenessResult\": null,\n      \"faceLivenessMessage\": null,\n      \"createdDate\": \"16:36 28/03/2024\"\n    },\n    \"personalData\": {\n      \"mrz\": \"IDVNM2010106538044201010653<<40101295M2601294VNM<<<<<<<<<<<6TRAN<<HIEU<NGHIA<<<<<<<<<<<<<<\",\n      \"cardNumber\": \"044201010653\",\n      \"fullName\": \"Trần Hiếu Nghĩa\",\n      \"dateOfBirth\": \"29/01/2001\",\n      \"sex\": \"Nam\",\n      \"nationality\": \"Việt Nam\",\n      \"ethnicity\": \"Kinh\",\n      \"religion\": \"Không\",\n      \"placeOfOrigin\": \"Vạn Ninh, Quảng Ninh, Quảng Bình\",\n      \"placeOfResidence\": \"Tổ Dân Phố 13, Bắc Lý, Thành Phố Đồng Hới, Quảng Bình\",\n      \"personalIdentification\": \"Nốt ruồi C:1 cm dưới sau đuôi mắt trái\",\n      \"dateOfIssue\": \"12/01/2022\",\n      \"dateOfExpiry\": \"29/01/2026\",\n      \"fatherName\": \"Trần Văn Cường\",\n      \"motherName\": \"Cao Thị Thúy Liễu\",\n      \"spouseName\": null,\n      \"oldCardNumber\": \"194639981\",\n      \"cardFontImage\": null,\n      \"cardBackImage\": null,\n      \"originalImage\": \"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\",\n      \"capturedImage\": null\n    }\n  }\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{domain}}/post",
+					"host": [
+						"{{domain}}"
+					],
+					"path": [
+						"post"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Post Sample Error Data",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"timestamp\": \"2024-03-28T03:32:36.234Z\", // Mốc thời gian\n  \"error\": { // Dữ liệu trả về khi lỗi\n    \"status\": \"integer\", // Mã lỗi HTTP\n    \"message\": \"string\" // Mô tả lỗi\n  }\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{domain}}/users",
+					"host": [
+						"{{domain}}"
+					],
+					"path": [
+						"users"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "domain",
+			"value": "http://127.0.0.1:9001",
+			"type": "string"
+		}
+	]
+}
