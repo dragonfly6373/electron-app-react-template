@@ -6,17 +6,29 @@ Boilerplate for a project using Electron, React and Typescript.
 
 Use a package manager of your choice (npm, yarn, etc.) in order to install all dependencies
 
+```bash
+export PUPPETEER_SKIP_DOWNLOAD='true'
+# on Windows
+SET PUPPETEER_SKIP_DOWNLOAD='true'
+npm install --legacy-peer-deps
 ```
-// install electron dev-tools dependencies
+
+Detail installation
+
+```bash
+# install required dependencies
+npm install @reduxjs/toolkit dotenv puppeteer react react-dom react-hot-loader react-redux react-router-dom styled-components
+
+# install electron dev-tools dependencies
 npm install -D typescript file-loader @types/electron-devtools-installer @types/jest @types/react @types/react-dom @types/styled-components
 
-// install build tools and plugins develop-dependencies
+# install build tools and plugins develop-dependencies
 npm install -D @babel/core @babel/plugin-transform-runtime @babel/preset-env @babel/preset-react @babel/preset-typescript @electron-forge/cli @electron-forge/maker-deb @electron-forge/maker-rpm @electron-forge/maker-squirrel @electron-forge/maker-zip @electron-forge/plugin-webpack @typescript-eslint/eslint-plugin @typescript-eslint/parser babel-loader cross-env electron eslint eslint-config-prettier eslint-config-standard eslint-plugin-import eslint-plugin-node eslint-plugin-prettier eslint-plugin-promise eslint-plugin-react eslint-plugin-standard
 
-// install testing dependencies
+# install testing dependencies
 npm install -D jest npm-run-all prettier ts-jest
 
-// install build tools dependencies
+# install build tools dependencies
 npm install -D @marshallofsound/webpack-asset-relocator-loader @testing-library/jest-dom @testing-library/react --legacy-peer-deps
 ```
 

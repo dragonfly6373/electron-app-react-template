@@ -14,7 +14,7 @@ const Wrapper = styled.section`
     & .log-type {
         text-transform: uppercase;
         margin-right: 0.5em;
-        width: 3em;
+        width: 3.5em;
         &.error { color: var(--color-danger); }
         &.warn { color: var(--color-warn); }
         &.info { color: var(--color-success); }
@@ -25,7 +25,6 @@ const Wrapper = styled.section`
 
 export default function() {
     const appLogs = useSelector(getAppLog);
-    console.log("Init LogView");
 
     return (<Wrapper className="section flex-col flex-auto">
         <h5>Output Logs:</h5>
@@ -33,7 +32,7 @@ export default function() {
             {appLogs.map((log: any, i: number) => {
                 return (<div className="flex-row log-item" key={i}>
                     <div className={`log-type ${log.type}`}>{log.type}</div>
-                    <div className="log-content">{log.content}</div>
+                    <div className="log-content">{String(log.content)}</div>
                 </div>)
             })}
         </div>

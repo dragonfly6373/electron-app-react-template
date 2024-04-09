@@ -13,60 +13,51 @@ export default function () {
     const dispatch = useDispatch();
     const appStatus = useSelector(getAppStatus);
     const appLogs = useSelector(getAppLog);
+    let isRunning = false;
     // const [ logs, setLogs ] = useState(new Array<any>());
     // const [ appInfo, setAppInfo ] = useState({});
 
-    const updateAppStatus = (data: any) => {
+    const updateAppStatus = (data: {serverUrl: string, isRunning: boolean}) => {
         dispatch(updateStatus(data));
     }
 
-    const pushAppLog = (data: any) => {
+    const pushAppLog = (data: {type: string, content: any}) => {
         dispatch(pushLog(data));
     }
     
-    const onMessage = (data: any) => {
-        console.log('background process message:', data);
-        switch (data.event) {
-            case 'app_info': {
-                // setAppInfo(data.data);
-                updateAppStatus(data.data);
+    const onMessage = (obj: {event: string, data: any}) => {
+        // const obj = JSON.parse(data);
+        console.log('background process message:', obj.event, obj.data);
+        switch (obj.event) {
+            case 'app:info': {
+                pushAppLog({type: "info", content: JSON.stringify(obj.data)});
+                updateAppStatus(obj.data);
                 break;
             }
             case 'server:start': {
-                // setAppInfo({...appInfo, isRunning: true});
+                pushAppLog({type: "info", content: JSON.stringify(obj.data)});
                 updateAppStatus({ ...appStatus, isRunning: true });
                 break;
             }
             case 'server:stop': {
-                // setAppInfo({...appInfo, isRunning: false});
+                pushAppLog({type: "info", content: JSON.stringify(obj.data)});
                 updateAppStatus({ ...appStatus, isRunning: false });
                 break;
             }
-            case 'logs': {
-                // setLogs([...logs, data.data].slice(Math.max(logs.length - 100), 0));
-                pushAppLog(data.data);
+            case 'app:logs': {
+                pushAppLog(obj.data);
                 break;
             }
             default:
+                pushAppLog({type: "error", content: `unknown event ${obj.event}`});
                 break;
         }
     }
 
     useEffect(() => {
-        
-        window.ipc.on('message', onMessage);
+        window.ipc.on('message', (data: any) => onMessage(data));
         window.ipc.sendMessage(JSON.stringify({ event: 'ready' }));
-        function autoRun() {
-            updateAppStatus({...appStatus, isRunning: isRunning});
-            pushAppLog({type: "info", content: isRunning});
-            isRunning = !isRunning;
-        }
-        let interval = setInterval(autoRun, 2000);
-        return () => {
-            clearInterval(interval);
-        }
     }, [dispatch]);
-    let isRunning = false;
     console.log('App ready', appStatus, appLogs);
     return (
         <>

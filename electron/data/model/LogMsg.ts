@@ -1,8 +1,8 @@
 const TYPES = {
-    ERROR: "ERROR",
-    WARN: "WARN",
-    INFO: "INFO",
-    DEBUG: "DEBUG",
+    ERROR: "error",
+    WARN: "warn",
+    INFO: "info",
+    DEBUG: "debug",
 }
 export default class LogMsg {
     static Types = TYPES;
