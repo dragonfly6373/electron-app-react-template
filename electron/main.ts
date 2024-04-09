@@ -33,10 +33,12 @@ const IpcEvents = {
 function createWindow () {
   mainWindow = new BrowserWindow({
     // icon: path.join(assetsPath, 'assets', 'icon.png'),
-    width: 800,
-    height: 600,
+    width: 520,
+    height: 320,
     backgroundColor: '#FFF',
+    autoHideMenuBar: true,
     webPreferences: {
+      devTools: false,
       nodeIntegration: false,
       contextIsolation: true,
       preload: MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY
@@ -46,7 +48,8 @@ function createWindow () {
   mainWindow.loadURL(MAIN_WINDOW_WEBPACK_ENTRY);
 
   mainWindow.on('close', (e: Event) => {
-    e.preventDefault()
+    e.preventDefault();
+    if (!mainWindow?.isClosable()) return;
     dialog.showMessageBox({
       title: 'Confirm',
       type: "warning",
@@ -56,7 +59,7 @@ function createWindow () {
       console.log("Quit app confirm:", confirm.response);
       if (confirm.response === 0) { // Runs the following if 'Yes' is clicked
         // app?.showExitPrompt = false;
-        mainWindow?.close();
+        // mainWindow?.close();
         app.quit();
         process.exit();
       }
@@ -77,10 +80,12 @@ async function openChromeTab(url: string) {
         icon: "",
         title: "Web view",
         width: 800, height: 600,
+        autoHideMenuBar: true
       });
       // webView.setKiosk(true);
       webView.setFullScreen(true);
       webView.loadURL(url);
+      webView.focus();
     } else {
       if (process.platform === 'win32') {
         exec(`start chrome ${url}`, (error: any, stdout: string, stderr: string) => {
@@ -211,15 +216,15 @@ app.on('activate', () => {
 const uncaughtErrorHandler = (options: any, exitCode: number) => {
   logger.error("uncaughtErrorHandler", options, exitCode);
   try {
-      if (options.cleanup) {
-        webView?.close();
-          logger.info('clean');
-      }
+    if (options.cleanup) {
+      if (webView?.isClosable()) webView?.close();
+      logger.info('clean');
+    }
   } catch(error: any) {
-      logger.error("kill all child processes failed with error", error.message);
+    logger.error("kill all child processes failed with error", error.message);
   } finally {
-      if (exitCode || exitCode === 0) console.log(exitCode);
-      if (options.exit) process.exit();
+    if (exitCode || exitCode === 0) console.log(exitCode);
+    if (options.exit) process.exit();
   }
 }
 
