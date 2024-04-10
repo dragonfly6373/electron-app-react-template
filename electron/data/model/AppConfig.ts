@@ -1,4 +1,6 @@
 export default class AppConfig {
-    server_port: number = 9001;
-    client_url: string = "";
+    autoOpenClient: boolean = false;
+    autoStartServer: boolean = false;
+    serverPort: number = 9001;
+    clientUrl: string = "";
 }

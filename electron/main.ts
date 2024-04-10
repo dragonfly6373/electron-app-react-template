@@ -31,14 +31,18 @@ const IpcEvents = {
 //     : app.getAppPath()
 
 function createWindow () {
+  console.log("# createWindow", {MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY, MAIN_WINDOW_WEBPACK_ENTRY});
+  
   mainWindow = new BrowserWindow({
     // icon: path.join(assetsPath, 'assets', 'icon.png'),
     width: 520,
     height: 320,
+    minWidth: 520,
+    minHeight: 320,
     backgroundColor: '#FFF',
     autoHideMenuBar: true,
     webPreferences: {
-      devTools: false,
+      // devTools: false,
       nodeIntegration: false,
       contextIsolation: true,
       preload: MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY
@@ -172,7 +176,7 @@ async function registerListeners () {
     switch(event) {
       case 'ready': {
         // evt.sender.send("message", {isRunning: httpServer?.isRunning() || false});
-        ipcSendMessage({ event: IpcEvents.APP_INFO, data: { isRunning: httpServer?.isRunning() || false } });
+        ipcSendMessage({ event: IpcEvents.APP_INFO, data: { isRunning: httpServer?.isRunning() || false, appConfig: configService.getAppConfig() } });
         // setInterval(() => logger.info("PING", new Date()), 5000);
         break;
       }

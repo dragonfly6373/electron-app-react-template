@@ -6,6 +6,8 @@ import { ReactComponent as ImgPlay } from "../assets/icons/play.svg";
 import { ReactComponent as ImgStop } from "../assets/icons/stop.svg";
 import { ReactComponent as ImgSettings } from "../assets/icons/settings.svg";
 import { getAppStatus, updateStatus } from "../store/AppStatus";
+import SettingModal from "./SettingModal";
+import { useState } from "react";
 
 const Wrapper = styled.section`
   .status { margin-left: 0.6em; }
@@ -15,13 +17,16 @@ export default function ServerControl() {
     const appStatus = useSelector(getAppStatus);
     const dispatch = useDispatch();
 
+    const [isShowSettingModal, showSettingModal] = useState(false);
+
     function startStopServer() {
         window.ipc.sendMessage(JSON.stringify({event: (appStatus.isRunning ? "stop" : "start")}));
     }
 
-    function openConfig() {
-        console.log("open app configs");
-        dispatch(updateStatus({isRunning: true}));
+    function updateAppSetting(settings: {autoOpenClient: boolean, autoStartServer: boolean, serverPort: string, clientUrl: string} | null) {
+        console.log("update app settings:", settings);
+        window.ipc.sendMessage(JSON.stringify({event: "config", data: settings}));
+        showSettingModal(false);
     }
 
     return (<Wrapper className="section flex-row align-center">
@@ -33,8 +38,11 @@ export default function ServerControl() {
         <span className={["status flex-auto", (appStatus.isRunning ? "start" : "stop")].join(" ")}>
             {(!appStatus.isRunning ? "server is stoped" : "server is running on http://127.0.0.1:9001")}
         </span>
-        <Button className="sm icon circle primary" onClick={() => openConfig()}>
+        <Button className="sm icon circle primary" onClick={() => showSettingModal(true)}>
             <ImgSettings />
         </Button>
+        { isShowSettingModal
+            ? <SettingModal onClose={updateAppSetting} />
+            : null }
     </Wrapper>);
 }

@@ -17,6 +17,7 @@
   "dependencies": {
     "@reduxjs/toolkit": "^2.2.3",
     "dotenv": "^16.4.5",
+    "electron-store": "^8.2.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-hot-loader": "^4.13.1",
@@ -88,6 +89,7 @@
               "entryPoints": [
                 {
                   "html": "./public/index.html",
+                  "css": "./public/fonts/fonticons-icons.css",
                   "js": "./src/index.tsx",
                   "name": "main_window",
                   "preload": {
