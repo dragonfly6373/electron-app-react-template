@@ -38,6 +38,7 @@ export const GlobalStyle = createGlobalStyle`
     padding: 0.2em 0.6em;
   }
   :root {
+    --color-default: #CCC;
     --color-primary: #1c85c7;
     --color-warn: #c7b51c;
     --color-danger: #ff4444;

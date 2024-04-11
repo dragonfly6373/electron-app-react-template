@@ -9,9 +9,11 @@ export default class LogMsg {
 
     type: string;
     content: string;
+    time: number;
 
     constructor(type: string, content: string) {
         this.type = type;
         this.content = content;
+        this.time = new Date().getTime();
     }
 }

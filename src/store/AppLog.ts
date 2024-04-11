@@ -1,6 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
+import LogMsg from "../../electron/data/model/LogMsg";
 
-var initState: Array<any> = [{type: "info", content: "app ready"}];
+var initState: Array<LogMsg> = [/* {type: "info", content: "app ready", time: new Date()} */];
 
 export const appLog = createSlice({
     name: "appLog",
@@ -9,7 +10,7 @@ export const appLog = createSlice({
     },
     reducers: {
         pushLog: (state, action) => {
-            console.log("@pushLog", action.payload);
+            // console.log("@pushLog", action.payload);
             state.data = [...state.data, action.payload].slice(Math.max(state.data.length - 100, 0));
         }
     }
@@ -18,8 +19,6 @@ export const appLog = createSlice({
 export const { pushLog } = appLog.actions;
 
 export const getAppLog = (state: any) => {
-    console.log("@getAppLog", state.appLog);
-    
     return state.appLog.data;
 }
 

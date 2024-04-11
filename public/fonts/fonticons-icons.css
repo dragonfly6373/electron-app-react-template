@@ -1,0 +1,88 @@
+@font-face {
+                font-family: 'fonticons-icons';
+                src: url('./fonticons-icons.eot');
+                src: url('./fonticons-icons.eot?#iefix') format('embedded-opentype'),
+                    url('./fonticons-icons.woff2') format('woff2'), 
+                    url('./fonticons-icons.woff') format('woff'),
+                    url('./fonticons-icons.ttf') format('truetype');
+                font-weight: normal;
+                font-style: normal;
+            }
+
+            [class^="icon-fonticons-"], [class*=" icon-fonticons-"] {
+                font-family: 'fonticons-icons' !important;
+                speak: none;
+                position: relative;
+                display: inline-block;
+                font-style: normal;
+                font-weight: 400;
+                line-height: 1;
+                -webkit-font-smoothing: antialiased;
+                width: 1em;
+                text-align: center;
+                vertical-align: middle;
+
+                -webkit-font-smoothing: antialiased;
+                -moz-osx-font-smoothing: grayscale;
+            }
+            .icon-fonticons-about:before {
+                        content: "\e900";
+                    }
+                    .icon-fonticons-account-cog:before {
+                        content: "\e901";
+                    }
+                    .icon-fonticons-add:before {
+                        content: "\e902";
+                    }
+                    .icon-fonticons-check:before {
+                        content: "\e903";
+                    }
+                    .icon-fonticons-checkmark:before {
+                        content: "\e904";
+                    }
+                    .icon-fonticons-chevron-left:before {
+                        content: "\e905";
+                    }
+                    .icon-fonticons-chevron-right:before {
+                        content: "\e906";
+                    }
+                    .icon-fonticons-circle_close:before {
+                        content: "\e907";
+                    }
+                    .icon-fonticons-close:before {
+                        content: "\e908";
+                    }
+                    .icon-fonticons-delete:before {
+                        content: "\e909";
+                    }
+                    .icon-fonticons-exit_fullscreen:before {
+                        content: "\e90a";
+                    }
+                    .icon-fonticons-fullscreen:before {
+                        content: "\e90b";
+                    }
+                    .icon-fonticons-help:before {
+                        content: "\e90c";
+                    }
+                    .icon-fonticons-more:before {
+                        content: "\e90d";
+                    }
+                    .icon-fonticons-more-vertical:before {
+                        content: "\e90e";
+                    }
+                    .icon-fonticons-play:before {
+                        content: "\e90f";
+                    }
+                    .icon-fonticons-power:before {
+                        content: "\e910";
+                    }
+                    .icon-fonticons-settings:before {
+                        content: "\e911";
+                    }
+                    .icon-fonticons-stop:before {
+                        content: "\e912";
+                    }
+                    .icon-fonticons-warning:before {
+                        content: "\e913";
+                    }
+                    

@@ -22,6 +22,13 @@ module.exports = [
     }
   },
   {
+    test: /\.(css|woff?2|ttf|afm|eot)$/i,
+    loader: 'file-loader',
+    options: {
+      name: '[path][name].[ext]',
+    },
+  },
+  {
     test: /\.(png|jpe?g|gif)$/i,
     loader: 'file-loader',
     options: {

@@ -8,9 +8,11 @@ import LogMsg from './data/model/LogMsg';
 
 dotenv.config();
 
-const PORT = parseInt(process.env.SERVER_PORT || '9001');
+const DEFAULT_PORT = parseInt(process.env.SERVER_PORT || '9001');
 const USE_CHROME_BROWSER = (/^true$/i).test(process.env.USE_CHROME_BROWSER || 'false');
-const CLIENT_URL = process.env.CLIENT_URL || "https://docs.fedoraproject.org";
+const DEFAULT_CLIENT_URL = process.env.CLIENT_URL || "https://docs.fedoraproject.org";
+
+let appSettings = configService.getAppConfig();
 
 let mainWindow: BrowserWindow | null;
 let httpServer: HttpServer | null;
@@ -74,7 +76,11 @@ function createWindow () {
 }
 
 function saveConfigs(config: AppConfig) {
-  configService.updateAppConfig(config);
+  let appSettings = configService.updateAppConfig(config);
+  ipcSendMessage({
+    event: IpcEvents.APP_INFO,
+    data: { isRunning: httpServer?.isRunning() || false, configs: appSettings }
+  });
 }
 
 async function openChromeTab(url: string) {
@@ -115,10 +121,13 @@ async function openChromeTab(url: string) {
 function startServer(port: number) {
   httpServer = HttpServer.getInstance();
   httpServer?.start(port, () => {
-    ipcSendMessage({event: IpcEvents.START, data: {
-      isRunning: httpServer?.isRunning()
-    }});
-    openChromeTab(CLIENT_URL);
+    // ipcSendMessage({event: IpcEvents.START, data: {
+    //   isRunning: httpServer?.isRunning()
+    // }});
+    ipcSendMessage({ event: IpcEvents.APP_INFO, data: { isRunning: httpServer?.isRunning() || false, configs: configService.getAppConfig() } });
+    if (appSettings.autoOpenClient) {
+      openChromeTab(appSettings.clientUrl || DEFAULT_CLIENT_URL);
+    }
   });
   httpServer?.addListener(IpcEvents.POST, (data) => {
     logger.info("[REQUES] post data", data);
@@ -126,9 +135,10 @@ function startServer(port: number) {
   });
   httpServer?.addListener(IpcEvents.STOP, (data) => {
     logger.warn(`[HTTP] Event.${IpcEvents.STOP}`);
-    ipcSendMessage({event: IpcEvents.STOP, data: {
-      isRunning: httpServer?.isRunning()
-    }});
+    // ipcSendMessage({event: IpcEvents.STOP, data: {
+    //   isRunning: httpServer?.isRunning()
+    // }});
+    ipcSendMessage({ event: IpcEvents.APP_INFO, data: { isRunning: httpServer?.isRunning() || false, configs: configService.getAppConfig() } });
   });
   httpServer?.addListener(IpcEvents.LOGS, (data) => {
     logger.info(`[HTTP] Event.${IpcEvents.LOGS}`);
@@ -165,18 +175,22 @@ const logger = {
 };
 
 async function registerListeners () {
+  const settings = configService.getAppConfig();
+  if (settings.autoStartServer) {
+    startServer(settings.serverPort);
+  }
   /**
    * This comes from bridge integration, check bridge.ts
    */
   ipcMain.on('message', (evt, message) => {
     console.log("new message", message);
-    
+  
     let { event, data } = JSON.parse(message);
     // logger.info(`[IPC] Events.${event}:`, data);
     switch(event) {
       case 'ready': {
         // evt.sender.send("message", {isRunning: httpServer?.isRunning() || false});
-        ipcSendMessage({ event: IpcEvents.APP_INFO, data: { isRunning: httpServer?.isRunning() || false, appConfig: configService.getAppConfig() } });
+        ipcSendMessage({ event: IpcEvents.APP_INFO, data: { isRunning: httpServer?.isRunning() || false, configs: configService.getAppConfig() } });
         // setInterval(() => logger.info("PING", new Date()), 5000);
         break;
       }
@@ -185,7 +199,7 @@ async function registerListeners () {
         break;
       }
       case 'start': {
-        startServer(PORT);
+        startServer(appSettings.serverPort || DEFAULT_PORT);
         break;
       }
       case 'stop': {

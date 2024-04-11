@@ -6,5 +6,6 @@ export default configureStore({
     reducer: {
         appStatus: appStatusReducer,
         appLog: appLogReducer
-    }
+    },
+    middleware: (getDefaultMiddleware) => getDefaultMiddleware({serializableCheck: false})
 });

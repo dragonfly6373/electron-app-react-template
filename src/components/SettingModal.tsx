@@ -1,9 +1,9 @@
-// import { useSelector, useDispatch } from "react-redux";
-// import { useDispatch, useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import styled from "styled-components";
 import { Button } from "../widgets/Button";
 import { InputField } from "../widgets/InputField";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { AppStatus, getAppStatus } from "../store/AppStatus";
 
 const Wrapper = styled.section`
     &.cover {
@@ -14,12 +14,13 @@ const Wrapper = styled.section`
         top: 0; right: 0; bottom: 0; left: 0;
         overflow: hidden;
         background-color: rgba(0,0,0,0.25);
+        z-index: 1;
         & .main {
             display: flex;
             flex-flow: column;
             box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
             background-color: #FFF;
-            border-radius: 0.6em;
+            border-radius: 0.25em;
             overflow: hidden;
         }
     }
@@ -38,7 +39,10 @@ const Wrapper = styled.section`
             margin-left: 0.6em;
         }}
     }
-    .header { border-bottom: 1px solid #DDD; }
+    .header {
+        border-bottom: 1px solid #DDD;
+        & .btn-close:hover { background-color: var(--color-danger); }
+    }
     .footer { border-top: 1px solid #DDD; }
     .body {
         flex: 1 auto;
@@ -62,11 +66,21 @@ export default function SettingModal( options: { onClose: Function }) {
     const [serverPort, setServerPort] = useState(9001);
     const [clientUrl, setClientUrl] = useState("");
 
+    const appStatus: AppStatus = useSelector(getAppStatus);
+    console.log("SettingModal - appStatus", appStatus);
+
+    useEffect(() => {
+        setAutoOpenClient(appStatus.configs?.autoOpenClient || autoOpenClient);
+        setAutoStartServer(appStatus.configs?.autoStartServer || autoStartServer);
+        setServerPort(appStatus.configs?.serverPort || serverPort);
+        setClientUrl(appStatus.configs?.clientUrl || clientUrl);
+    }, [appStatus]);
+
     return (<Wrapper className="section cover">
         <div className="main">
             <div className="header">
-                <h4 className="title">Cài đặt</h4>
-                <Button className="circle sm danger"
+                <h4 className="title">Settings</h4>
+                <Button className="circle sm btn-close"
                     onClick={() => options.onClose(null)}>x</Button>
             </div>
             <div className="body">
@@ -83,7 +97,7 @@ export default function SettingModal( options: { onClose: Function }) {
                 <div className="input-group">
                     <label>Server Port</label>
                     <InputField value={serverPort}
-                        onChange={(event: any) => setServerPort(event.target.value)}/>
+                        onChange={(event: any) => setServerPort(parseInt(event.target.value))}/>
                 </div>
                 <div className="input-group">
                     <label>Client URL</label>

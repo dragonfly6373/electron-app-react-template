@@ -1,6 +1,20 @@
 import { createSlice } from "@reduxjs/toolkit";
+import AppConfig from "../../electron/data/model/AppConfig";
 
-var initState: {serverUrl: string, isRunning: boolean} = { serverUrl: "", isRunning: false };
+export interface AppStatus {
+    configs?: AppConfig;
+    isRunning?: boolean;
+}
+
+var initState: AppStatus = {
+    configs: {
+        autoOpenClient: false,
+        autoStartServer: false,
+        serverPort: 9001,
+        clientUrl: ""
+    },
+    isRunning: false
+};
 
 export const appStatusSlice = createSlice({
     name: "appStatus",

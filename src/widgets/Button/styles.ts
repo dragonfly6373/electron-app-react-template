@@ -6,6 +6,7 @@ export const Container = styled.button`
   justify-content: center;
   border: 0;
   border-radius: 0.3em;
+  background-color: var(--color-default);
   box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
   line-height: 1.2em;
   color: white;
