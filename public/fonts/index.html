@@ -15,7 +15,7 @@
             function createItem(code, name) {
                 var node = document.createElement("div");
                 node.className = "item";
-                node.innerHTML = "<icon class=\"icon icon-" + prefix + "-" + name + "\"></icon>"
+                node.innerHTML = "<icon class=\"icon " + prefix + "-" + name + "\"></icon>"
                     + "<div class=\"description\"><span>" + name + "</span>"
                     + "<span>0x" + parseInt(code).toString(16) + "</span></div>";
                 return node;

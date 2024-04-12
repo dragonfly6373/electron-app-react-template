@@ -4,6 +4,7 @@ import { Button } from "../widgets/Button";
 import { InputField } from "../widgets/InputField";
 import { useEffect, useState } from "react";
 import { AppStatus, getAppStatus } from "../store/AppStatus";
+import { Icon } from "../widgets/Icon";
 
 const Wrapper = styled.section`
     &.cover {
@@ -81,7 +82,9 @@ export default function SettingModal( options: { onClose: Function }) {
             <div className="header">
                 <h4 className="title">Settings</h4>
                 <Button className="circle sm btn-close"
-                    onClick={() => options.onClose(null)}>x</Button>
+                    onClick={() => options.onClose(null)}>
+                    <Icon type="close" />
+                </Button>
             </div>
             <div className="body">
                 <div className="input-group">
@@ -96,12 +99,12 @@ export default function SettingModal( options: { onClose: Function }) {
                 </div>
                 <div className="input-group">
                     <label>Server Port</label>
-                    <InputField value={serverPort}
+                    <InputField type="number" value={serverPort}
                         onChange={(event: any) => setServerPort(parseInt(event.target.value))}/>
                 </div>
                 <div className="input-group">
                     <label>Client URL</label>
-                    <InputField value={clientUrl}
+                    <InputField type="text" value={clientUrl}
                         onChange={(event: any) => setClientUrl(event.target.value)}/>
                 </div>
             </div>

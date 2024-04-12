@@ -7,6 +7,7 @@ import { ReactComponent as ImgSettings } from "../assets/icons/settings.svg";
 import { AppStatus, getAppStatus, updateStatus } from "../store/AppStatus";
 import SettingModal from "./SettingModal";
 import { useState } from "react";
+import { Icon } from "../widgets/Icon";
 
 const Wrapper = styled.section`
   .status { margin-left: 0.6em; }
@@ -42,13 +43,13 @@ export default function ServerControl() {
         <Button className={["sm icon circle", (appStatus.isRunning ? "success" : "danger")].join(" ")}
             onClick={() => startStopServer()}
             title={`click to ${(appStatus.isRunning ? "stop" : "start")} server`}>
-            <IconPower />
+            <Icon type="power" />
         </Button>
         <span className={`status flex-auto ${appStatus.isRunning ? "blink" : ""}`}>
             {(!appStatus.isRunning ? "Server is stoped" : `Server is running on http://127.0.0.1:${appStatus.configs?.serverPort}`)}
         </span>
         <Button className="sm icon circle primary" onClick={() => showSettingModal(true)}>
-            <ImgSettings />
+            <Icon type="settings" />
         </Button>
         { isShowSettingModal
             ? <SettingModal onClose={updateAppSetting} />

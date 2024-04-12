@@ -9,8 +9,9 @@ export const Container = styled.input`
 
 type InputProps = {
   // children: ReactNode;
+  type: 'text' | 'number' | 'password';
 } & InputHTMLAttributes<HTMLInputElement>;
 
 export function InputField(props: InputProps) {
-  return <Container type="text" {...props} />
+  return <Container {...props}/>
 }
