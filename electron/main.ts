@@ -31,7 +31,8 @@ const IpcEvents = {
 // const assetsPath =
 //   process.env.NODE_ENV === 'production'
 //     ? process.resourcesPath
-//     : app.getAppPath()
+//     : app.getAppPath();
+
 Logger.config({
   appName: 'my-electron',
   level: LOG_LEVEL,
@@ -40,221 +41,217 @@ Logger.config({
   timeIncluded: LOG_TIME_INCLUDED
 });
 
-let logger = new Logger("main");
-
-let appSettings = configService.getAppConfig();
-
-let mainWindow: BrowserWindow | null;
-let httpServer: HttpServer | null;
-let webView: BrowserWindow | null;
-let showExitPrompt = true;
-
-function createWindow () {
-  console.log("# createWindow", {MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY, MAIN_WINDOW_WEBPACK_ENTRY});
+class Main {
+  app: Electron.App;
+  logger = new Logger("main");
   
-  mainWindow = new BrowserWindow({
-    // icon: path.join(app.getAppPath(), 'assets', 'icon.png'),
-    width: 520,
-    height: 320,
-    minWidth: 520,
-    minHeight: 320,
-    backgroundColor: '#FFF',
-    autoHideMenuBar: true,
-    webPreferences: {
-      // devTools: false,
-      nodeIntegration: false,
-      contextIsolation: true,
-      preload: MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY
-    }
-  });
+  appSettings: AppConfig | null = null;
+  
+  mainWindow: BrowserWindow | null;
+  httpServer: HttpServer | null;
+  webView: BrowserWindow | null;
+  showExitPrompt: boolean = true;
 
-  mainWindow.loadURL(MAIN_WINDOW_WEBPACK_ENTRY);
-
-  mainWindow.on('close', (e: Event) => {
-    e.preventDefault();
-    if (!mainWindow?.isClosable() || !showExitPrompt) return;
-    dialog.showMessageBox({
-      title: 'Confirm',
-      type: "warning",
-      message: 'Are you sure you want to quit?',
-      buttons: ['Yes', 'No'],
-    }).then((confirm: any) => {
-      if (confirm.response === 0) { // Runs the following if 'Yes' is clicked
-        logger.info("Quit app confirm:", confirm.response);
-        showExitPrompt = false;
-        // mainWindow?.close();
-        app.quit();
-        process.exit();
+  constructor(app: Electron.App) {
+    this.app = app;
+    this.appSettings = configService.getAppConfig();
+    this.mainWindow = null;
+    this.httpServer = null;
+    this.webView = null;
+    this.logger.on("all", this._log.bind(this));
+  
+    this.app.on('ready', this.createWindow.bind(this))
+      .whenReady()
+      .then(this.registerListeners.bind(this))
+      .catch(e => console.error(e));
+  
+    this.app.on('window-all-closed', () => {
+      if (process.platform !== 'darwin') {
+        this.app.quit();
       }
     });
-  });
-  // let index = 0;
-  // setInterval(() => {logger.debug("test log " + index)}, 2000);
-}
-
-function saveConfigs(config: AppConfig) {
-  appSettings = configService.updateAppConfig(config);
-  logger.info("saveConfig", appSettings);
-  ipcSendMessage({
-    event: IpcEvents.APP_INFO,
-    data: { isRunning: httpServer?.isRunning() || false, configs: appSettings }
-  });
-}
-
-async function openChromeTab(url: string) {
-  try {
-    if (!USE_CHROME_BROWSER) {
-      if (!webView || webView.isDestroyed()) webView = new BrowserWindow({
-        icon: "",
-        title: "Web view",
-        width: 800, height: 600,
-        autoHideMenuBar: true
-      });
-      // webView.setKiosk(true);
-      webView.setFullScreen(true);
-      webView.loadURL(url);
-      webView.focus();
-    } else {
-      if (process.platform === 'win32') {
-        exec(`start chrome ${url}`, (error: any, stdout: string, stderr: string) => {
-          if (error) logger.error(stderr);
-          else logger.info(stdout);
-        });
-      } else {
-        exec(`google-chrome ${url}`, (error: any, stdout: string, stderr: string) => {
-          if (error) logger.error(stderr);
-          else logger.info(stdout);
-        });
+    
+    this.app.on('activate', () => {
+      if (BrowserWindow.getAllWindows().length === 0) {
+        this.createWindow()
       }
-    }
-  } catch(err: any) {
-    logger.error(err.message || err);
+    });
   }
-}
 
-function startServer(port: number) {
-  httpServer = HttpServer.getInstance();
-  httpServer?.start(port, () => {
-    logger.info(`server is running on port: ${port}`);
-    ipcSendMessage({ event: IpcEvents.APP_INFO, data: { isRunning: httpServer?.isRunning() || false, configs: configService.getAppConfig() } });
-    if (appSettings.autoOpenClient) {
-      openChromeTab(appSettings.clientUrl || DEFAULT_CLIENT_URL);
-    }
-  });
-  httpServer?.addListener(IpcEvents.POST, (data) => {
-    logger.info("[REQUES] post data", data);
-    openChromeTab('https://docs.fedoraproject.org/en-US/fedora/latest/');
-  });
-  httpServer?.addListener(IpcEvents.STOP, (data) => {
-    logger.warn(`[HTTP] Event.${IpcEvents.STOP}`);
-    ipcSendMessage({ event: IpcEvents.APP_INFO, data: { isRunning: httpServer?.isRunning() || false, configs: configService.getAppConfig() } });
-  });
-  httpServer?.addListener(IpcEvents.LOGS, (data) => {
-    logger.info(`[HTTP] Event.${IpcEvents.LOGS}`);
-    ipcSendMessage({event: IpcEvents.LOGS, data});
-  });
-}
-
-function stopServer(callback?: Function) {
-  httpServer?.stop(callback);
-}
-
-function ipcSendMessage(message: {event: string, data: any}) {
-  mainWindow?.webContents.send("message", message);
-}
-
-function _log(type: string, message: string) {
-  console.log(type, message);
-  ipcSendMessage({ event: IpcEvents.LOGS, data: new LogMsg(type, message) });
-}
-logger.on("all", _log);
-
-/* const logger = {
-  error: (...messages: Array<any>) => {
-    _log(LogMsg.Types.ERROR, messages.map((msg) => JSON.stringify(msg)).join(" "));
-  },
-  warn: (...messages: Array<any>) => {
-    _log(LogMsg.Types.WARN, messages.map((msg) => JSON.stringify(msg)).join(" "));
-  },
-  info: (...messages: Array<any>) => {
-    _log(LogMsg.Types.INFO, messages.map((msg) => JSON.stringify(msg)).join(" "));
-  },
-  debug: (...messages: Array<any>) => {
-    _log(LogMsg.Types.DEBUG, messages.map((msg) => JSON.stringify(msg)).join(" "));
-  },
-}; */
-
-async function registerListeners () {
-  const settings = configService.getAppConfig();
-  if (settings.autoStartServer) {
-    startServer(settings.serverPort);
+  private _log(type: string, message: string) {
+    console.log(type, message);
+    this.ipcSendMessage({ event: IpcEvents.LOGS, data: new LogMsg(type, message) });
   }
-  /**
-   * This comes from bridge integration, check bridge.ts
-   */
-  ipcMain.on('message', (evt, message) => {
-    console.log("new message", message);
+
+  createWindow () {
+    console.log("# createWindow", {MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY, MAIN_WINDOW_WEBPACK_ENTRY});
+    
+    this.mainWindow = new BrowserWindow({
+      // icon: path.join(app.getAppPath(), 'assets', 'icon.png'),
+      width: 520,
+      height: 320,
+      minWidth: 520,
+      minHeight: 320,
+      backgroundColor: '#FFF',
+      autoHideMenuBar: true,
+      webPreferences: {
+        // devTools: false,
+        nodeIntegration: false,
+        contextIsolation: true,
+        preload: MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY
+      }
+    });
   
-    let { event, data } = JSON.parse(message);
-    // logger.info(`[IPC] Events.${event}:`, data);
-    switch(event) {
-      case 'ready': {
-        // evt.sender.send("message", {isRunning: httpServer?.isRunning() || false});
-        ipcSendMessage({ event: IpcEvents.APP_INFO, data: { isRunning: httpServer?.isRunning() || false, configs: configService.getAppConfig() } });
-        // setInterval(() => logger.info("PING", new Date()), 5000);
-        break;
-      }
-      case 'config': {
-        saveConfigs(data);
-        break;
-      }
-      case 'start': {
-        startServer(appSettings.serverPort || DEFAULT_PORT);
-        break;
-      }
-      case 'stop': {
-        stopServer(() => {
-          /* ipcSendMessage({ event: IpcEvents.STOP, data: "stop server" }) */
-          httpServer?.removeAllListeners();
+    this.mainWindow.loadURL(MAIN_WINDOW_WEBPACK_ENTRY);
+  
+    this.mainWindow.on('close', (e: Event) => {
+      e.preventDefault();
+      if (!this.mainWindow?.isClosable() || !this.showExitPrompt) return;
+      dialog.showMessageBox({
+        title: 'Confirm',
+        type: "warning",
+        message: 'Are you sure you want to quit?',
+        buttons: ['Yes', 'No'],
+      }).then((confirm: any) => {
+        if (confirm.response === 0) { // Runs the following if 'Yes' is clicked
+          this.logger.info("Quit app confirm:", confirm.response);
+          this.showExitPrompt = false;
+          // mainWindow?.close();
+          app.quit();
+          process.exit();
+        }
+      });
+    });
+  }
+
+  saveConfigs(config: AppConfig) {
+    this.appSettings = configService.updateAppConfig(config);
+    this.logger.info("saveConfig", this.appSettings);
+    this.ipcSendMessage({
+      event: IpcEvents.APP_INFO,
+      data: { isRunning: this.httpServer?.isRunning() || false, configs: this.appSettings }
+    });
+  }
+  
+  async openChromeTab(url: string) {
+    try {
+      if (!USE_CHROME_BROWSER) {
+        if (!this.webView || this.webView.isDestroyed()) this.webView = new BrowserWindow({
+          icon: "",
+          title: "Web view",
+          width: 800, height: 600,
+          autoHideMenuBar: true
         });
-        break;
+        // webView.setKiosk(true);
+        this.webView.setFullScreen(true);
+        this.webView.loadURL(url);
+        this.webView.focus();
+      } else {
+        if (process.platform === 'win32') {
+          exec(`start chrome ${url}`, (error: any, stdout: string, stderr: string) => {
+            if (error) this.logger.error(stderr);
+            else this.logger.info(stdout);
+          });
+        } else {
+          exec(`google-chrome ${url}`, (error: any, stdout: string, stderr: string) => {
+            if (error) this.logger.error(stderr);
+            else this.logger.info(stdout);
+          });
+        }
       }
-      default: break;
+    } catch(err: any) {
+      this.logger.error(err.message || err);
     }
-  });
+  }
+  
+  startServer(port: number) {
+    this.httpServer = HttpServer.getInstance();
+    this.httpServer?.start(port, () => {
+      this.logger.info(`server is running on port: ${port}`);
+      this.ipcSendMessage({ event: IpcEvents.APP_INFO, data: { isRunning: this.httpServer?.isRunning() || false, configs: configService.getAppConfig() } });
+      if (this.appSettings?.autoOpenClient) {
+        this.openChromeTab(this.appSettings.clientUrl || DEFAULT_CLIENT_URL);
+      }
+    });
+    this.httpServer?.addListener(IpcEvents.POST, (data) => {
+      this.logger.info("[REQUES] post data", data);
+      this.openChromeTab('https://docs.fedoraproject.org/en-US/fedora/latest/');
+    });
+    this.httpServer?.addListener(IpcEvents.STOP, (data) => {
+      this.logger.warn(`[HTTP] Event.${IpcEvents.STOP}`);
+      this.ipcSendMessage({ event: IpcEvents.APP_INFO, data: { isRunning: this.httpServer?.isRunning() || false, configs: configService.getAppConfig() } });
+    });
+    this.httpServer?.addListener(IpcEvents.LOGS, (data) => {
+      this.logger.info(`[HTTP] Event.${IpcEvents.LOGS}`);
+      this.ipcSendMessage({event: IpcEvents.LOGS, data});
+    });
+  }
+
+  stopServer(callback?: Function) {
+    this.httpServer?.stop(callback);
+  }
+  
+  ipcSendMessage(message: {event: string, data: any}) {
+    this.mainWindow?.webContents.send("message", message);
+  }
+
+
+  async registerListeners () {
+    const settings = configService.getAppConfig();
+    if (settings.autoStartServer) {
+      this.startServer(settings.serverPort);
+    }
+    /**
+     * This comes from bridge integration, check bridge.ts
+     */
+    ipcMain.on('message', (evt, message) => {
+      console.log("new message", message);
+    
+      let { event, data } = JSON.parse(message);
+      // logger.info(`[IPC] Events.${event}:`, data);
+      switch(event) {
+        case 'ready': {
+          // evt.sender.send("message", {isRunning: httpServer?.isRunning() || false});
+          this.ipcSendMessage({ event: IpcEvents.APP_INFO, data: { isRunning: this.httpServer?.isRunning() || false, configs: configService.getAppConfig() } });
+          // setInterval(() => logger.info("PING", new Date()), 5000);
+          break;
+        }
+        case 'config': {
+          this.saveConfigs(data);
+          break;
+        }
+        case 'start': {
+          this.startServer(this.appSettings?.serverPort || DEFAULT_PORT);
+          break;
+        }
+        case 'stop': {
+          this.stopServer(() => {
+            /* ipcSendMessage({ event: IpcEvents.STOP, data: "stop server" }) */
+            this.httpServer?.removeAllListeners();
+          });
+          break;
+        }
+        default: break;
+      }
+    });
+  }
+
+  uncaughtErrorHandler(options: any, exitCode: number) {
+    this.logger.error("uncaughtErrorHandler", options, exitCode);
+    try {
+      if (options.cleanup) {
+        if (this.webView?.isClosable()) this.webView?.close();
+        this.logger.info('clean');
+      }
+    } catch(error: any) {
+      this.logger.error("kill all child processes failed with error", error.message);
+    } finally {
+      if (exitCode || exitCode === 0) console.log(exitCode);
+      if (options.exit) process.exit();
+    }
+  }
 }
 
-app.on('ready', createWindow)
-  .whenReady()
-  .then(registerListeners)
-  .catch(e => console.error(e));
-
-app.on('window-all-closed', () => {
-  if (process.platform !== 'darwin') {
-    app.quit();
-  }
-});
-
-app.on('activate', () => {
-  if (BrowserWindow.getAllWindows().length === 0) {
-    createWindow()
-  }
-});
-
-const uncaughtErrorHandler = (options: any, exitCode: number) => {
-  logger.error("uncaughtErrorHandler", options, exitCode);
-  try {
-    if (options.cleanup) {
-      if (webView?.isClosable()) webView?.close();
-      logger.info('clean');
-    }
-  } catch(error: any) {
-    logger.error("kill all child processes failed with error", error.message);
-  } finally {
-    if (exitCode || exitCode === 0) console.log(exitCode);
-    if (options.exit) process.exit();
-  }
-}
-
+const main = new Main(app);
 // do something when app is closing
-process.on('exit', uncaughtErrorHandler.bind(null, {cleanup: true}));
+process.on('exit', main.uncaughtErrorHandler.bind(main, {cleanup: true}));

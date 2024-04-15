@@ -87,7 +87,7 @@ class ConfigService {
         }
     }
 
-    getAppConfig() {
+    getAppConfig(): AppConfig {
         console.log("# getAppConfig");
         
         const autoStartServer = this.store.get("autoStartServer");
