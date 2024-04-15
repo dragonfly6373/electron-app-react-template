@@ -237,11 +237,11 @@ class Main {
   }
 
   uncaughtErrorHandler(options: any, exitCode: number) {
-    this.logger.error("uncaughtErrorHandler", options, exitCode);
     try {
+      if (exitCode) this.logger.error("uncaughtErrorHandler", options, exitCode);
       if (options.cleanup) {
         if (this.webView?.isClosable()) this.webView?.close();
-        this.logger.info('clean');
+        this.logger.info('cleanup application');
       }
     } catch(error: any) {
       this.logger.error("kill all child processes failed with error", error.message);
