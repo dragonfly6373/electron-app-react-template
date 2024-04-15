@@ -1,22 +1,23 @@
 import { exec } from 'node:child_process';
+import path from 'node:path';
 import { app, BrowserWindow, dialog, Event, ipcMain } from 'electron';
-import HttpServer from './server';
 import dotenv from 'dotenv';
+import { parseBoolean } from '../utils/StringUtil';
+import HttpServer from './server';
 import configService from './data/ConfigService';
 import AppConfig from './data/model/AppConfig';
 import LogMsg from './data/model/LogMsg';
+import Logger from '../utils/Logger';
 
 dotenv.config();
 
 const DEFAULT_PORT = parseInt(process.env.SERVER_PORT || '9001');
-const USE_CHROME_BROWSER = (/^true$/i).test(process.env.USE_CHROME_BROWSER || 'false');
+const USE_CHROME_BROWSER = parseBoolean(process.env.USE_CHROME_BROWSER || "false");
 const DEFAULT_CLIENT_URL = process.env.CLIENT_URL || "https://docs.fedoraproject.org";
 
-let appSettings = configService.getAppConfig();
-
-let mainWindow: BrowserWindow | null;
-let httpServer: HttpServer | null;
-let webView: BrowserWindow | null;
+const LOG_LEVEL = parseInt(process.env.LOG_LEVEL || "3");
+const LOG_IS_WRITE_TO_FILE = parseBoolean(process.env.LOG_IS_WRITE_TO_FILE || "false");
+const LOG_TIME_INCLUDED = parseBoolean(process.env.LOG_TIME_INCLUDED || "false");
 
 declare const MAIN_WINDOW_WEBPACK_ENTRY: string;
 declare const MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY: string;
@@ -31,12 +32,28 @@ const IpcEvents = {
 //   process.env.NODE_ENV === 'production'
 //     ? process.resourcesPath
 //     : app.getAppPath()
+Logger.config({
+  appName: 'my-electron',
+  level: LOG_LEVEL,
+  isWriteToFile: LOG_IS_WRITE_TO_FILE,
+  logDir: path.join(app.getPath('userData'), "logs"),
+  timeIncluded: LOG_TIME_INCLUDED
+});
+
+let logger = new Logger("main");
+
+let appSettings = configService.getAppConfig();
+
+let mainWindow: BrowserWindow | null;
+let httpServer: HttpServer | null;
+let webView: BrowserWindow | null;
+let showExitPrompt = true;
 
 function createWindow () {
   console.log("# createWindow", {MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY, MAIN_WINDOW_WEBPACK_ENTRY});
   
   mainWindow = new BrowserWindow({
-    // icon: path.join(assetsPath, 'assets', 'icon.png'),
+    // icon: path.join(app.getAppPath(), 'assets', 'icon.png'),
     width: 520,
     height: 320,
     minWidth: 520,
@@ -55,16 +72,16 @@ function createWindow () {
 
   mainWindow.on('close', (e: Event) => {
     e.preventDefault();
-    if (!mainWindow?.isClosable()) return;
+    if (!mainWindow?.isClosable() || !showExitPrompt) return;
     dialog.showMessageBox({
       title: 'Confirm',
       type: "warning",
       message: 'Are you sure you want to quit?',
       buttons: ['Yes', 'No'],
     }).then((confirm: any) => {
-      console.log("Quit app confirm:", confirm.response);
       if (confirm.response === 0) { // Runs the following if 'Yes' is clicked
-        // app?.showExitPrompt = false;
+        logger.info("Quit app confirm:", confirm.response);
+        showExitPrompt = false;
         // mainWindow?.close();
         app.quit();
         process.exit();
@@ -76,7 +93,8 @@ function createWindow () {
 }
 
 function saveConfigs(config: AppConfig) {
-  let appSettings = configService.updateAppConfig(config);
+  appSettings = configService.updateAppConfig(config);
+  logger.info("saveConfig", appSettings);
   ipcSendMessage({
     event: IpcEvents.APP_INFO,
     data: { isRunning: httpServer?.isRunning() || false, configs: appSettings }
@@ -99,17 +117,13 @@ async function openChromeTab(url: string) {
     } else {
       if (process.platform === 'win32') {
         exec(`start chrome ${url}`, (error: any, stdout: string, stderr: string) => {
-          ipcSendMessage({
-            event: IpcEvents.LOGS,
-            data: new LogMsg(error ? LogMsg.Types.ERROR : LogMsg.Types.INFO, error ? stderr : stdout)
-          });
+          if (error) logger.error(stderr);
+          else logger.info(stdout);
         });
       } else {
         exec(`google-chrome ${url}`, (error: any, stdout: string, stderr: string) => {
-          ipcSendMessage({
-            event: IpcEvents.LOGS,
-            data: new LogMsg(error ? LogMsg.Types.ERROR : LogMsg.Types.INFO, error ? stderr : stdout)
-          });
+          if (error) logger.error(stderr);
+          else logger.info(stdout);
         });
       }
     }
@@ -121,9 +135,7 @@ async function openChromeTab(url: string) {
 function startServer(port: number) {
   httpServer = HttpServer.getInstance();
   httpServer?.start(port, () => {
-    // ipcSendMessage({event: IpcEvents.START, data: {
-    //   isRunning: httpServer?.isRunning()
-    // }});
+    logger.info(`server is running on port: ${port}`);
     ipcSendMessage({ event: IpcEvents.APP_INFO, data: { isRunning: httpServer?.isRunning() || false, configs: configService.getAppConfig() } });
     if (appSettings.autoOpenClient) {
       openChromeTab(appSettings.clientUrl || DEFAULT_CLIENT_URL);
@@ -135,9 +147,6 @@ function startServer(port: number) {
   });
   httpServer?.addListener(IpcEvents.STOP, (data) => {
     logger.warn(`[HTTP] Event.${IpcEvents.STOP}`);
-    // ipcSendMessage({event: IpcEvents.STOP, data: {
-    //   isRunning: httpServer?.isRunning()
-    // }});
     ipcSendMessage({ event: IpcEvents.APP_INFO, data: { isRunning: httpServer?.isRunning() || false, configs: configService.getAppConfig() } });
   });
   httpServer?.addListener(IpcEvents.LOGS, (data) => {
@@ -158,8 +167,9 @@ function _log(type: string, message: string) {
   console.log(type, message);
   ipcSendMessage({ event: IpcEvents.LOGS, data: new LogMsg(type, message) });
 }
+logger.on("all", _log);
 
-const logger = {
+/* const logger = {
   error: (...messages: Array<any>) => {
     _log(LogMsg.Types.ERROR, messages.map((msg) => JSON.stringify(msg)).join(" "));
   },
@@ -172,7 +182,7 @@ const logger = {
   debug: (...messages: Array<any>) => {
     _log(LogMsg.Types.DEBUG, messages.map((msg) => JSON.stringify(msg)).join(" "));
   },
-};
+}; */
 
 async function registerListeners () {
   const settings = configService.getAppConfig();

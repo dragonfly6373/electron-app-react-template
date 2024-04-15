@@ -2,8 +2,6 @@
 import { useSelector } from "react-redux";
 import styled from "styled-components";
 import { Button } from "../widgets/Button";
-import { ReactComponent as IconPower } from "../assets/icons/power.svg";
-import { ReactComponent as ImgSettings } from "../assets/icons/settings.svg";
 import { AppStatus, getAppStatus, updateStatus } from "../store/AppStatus";
 import SettingModal from "./SettingModal";
 import { useState } from "react";
