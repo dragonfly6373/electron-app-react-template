@@ -6,6 +6,7 @@ import { AppStatus, getAppStatus, updateStatus } from '../store/AppStatus'
 import SettingModal from './SettingModal'
 import { useState } from 'react'
 import { Icon } from '../widgets/Icon'
+import AboutModal from './AboutModal'
 
 const Wrapper = styled.section`
   & .status {
@@ -38,6 +39,7 @@ export default function ServerControl() {
   const appStatus: AppStatus = useSelector(getAppStatus);
 
   const [isShowSettingModal, showSettingModal] = useState(false);
+  const [isShowAboutModal, showAboutModal] = useState(false);
 
   function startStopServer() {
     window.ipc.sendMessage(
@@ -103,6 +105,7 @@ export default function ServerControl() {
         </Button>
       </div>
       {isShowSettingModal ? <SettingModal onClose={updateAppSetting} /> : null}
+      {isShowAboutModal ? <AboutModal onClose={() => showAboutModal(false)} /> : null}
     </Wrapper>
   )
 }

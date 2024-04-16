@@ -1,5 +1,7 @@
 import Store, { Schema } from 'electron-store';
 import AppConfig from "./model/AppConfig";
+import AppInfo from "./model/AppInfo";
+import * as application from "../../package.json";
 
 const schema: Schema<AppConfig> = {
     autoOpenClient: {
@@ -99,6 +101,23 @@ class ConfigService {
             autoStartServer,
             serverPort,
             clientUrl
+        };
+    }
+
+    getAppInfo(): AppInfo {
+        const {
+            name,
+            author,
+            version,
+            copyright,
+            description
+        } = application;
+        return {
+            name,
+            author,
+            version,
+            copyright,
+            description
         };
     }
 }

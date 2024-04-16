@@ -2,7 +2,8 @@
   "name": "electron-server",
   "author": "Nguyen Dang",
   "version": "2.0.0",
-  "description": "An Electron boilerplate including TypeScript, React, Jest and ESLint.",
+  "copyright": "Copyright Internet Systems Consortium (ISC) © 2024",
+  "description": "An Electron boilerplate including TypeScript, HTTP Server, React, Jest and ESLint.",
   "main": ".webpack/main",
   "scripts": {
     "start": "electron-forge start",
