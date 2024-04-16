@@ -1,9 +1,9 @@
 {
-  "name": "electron-react-typescript",
+  "name": "electron-server",
   "author": "Nguyen Dang",
   "version": "2.0.0",
   "description": "An Electron boilerplate including TypeScript, React, Jest and ESLint.",
-  "main": "./.webpack/main/index.js",
+  "main": ".webpack/main",
   "scripts": {
     "start": "electron-forge start",
     "rebuild": "electron-rebuild -f -w electron-starter",
@@ -77,8 +77,8 @@
   "config": {
     "forge": {
       "packagerConfig": {
-        "name": "Electron starter",
-        "executableName": "electron-starter",
+        "name": "Electron Server",
+        "executableName": "electron-server",
         "icon": "assets/icon",
         "extraResource": [
           "assets"
@@ -110,7 +110,7 @@
         {
           "name": "@electron-forge/maker-squirrel",
           "config": {
-            "name": "Electron Starter"
+            "name": "Electron Server"
           }
         },
         {

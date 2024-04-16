@@ -38,7 +38,8 @@ const Wrapper = styled.section`
             display: flex;
             & > :not(:first-child) {
             margin-left: 0.6em;
-        }}
+            }
+        }
     }
     .header {
         border-bottom: 1px solid #DDD;

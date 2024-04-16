@@ -231,6 +231,10 @@ class Main {
           });
           break;
         }
+        case 'client': {
+          this.openChromeTab(this.appSettings?.clientUrl || DEFAULT_CLIENT_URL);
+          break;
+        }
         default: break;
       }
     });

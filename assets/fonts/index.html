@@ -1,8 +1,8 @@
 <!Doctype html>
 <html>
     <head>
-        <title>FONTICONS - Font Icons</title>
-        <link rel="stylesheet" type="text/css" href="./fonticons-icons.css" />
+        <title>FONT - Font Icons</title>
+        <link rel="stylesheet" type="text/css" href="./font-icons.css" />
         <style>
             div { display: block; }
             #container { display: flex; flex-wrap: wrap; }
@@ -15,7 +15,7 @@
             function createItem(code, name) {
                 var node = document.createElement("div");
                 node.className = "item";
-                node.innerHTML = "<icon class=\"icon " + prefix + "-" + name + "\"></icon>"
+                node.innerHTML = "<icon class=\"icon icon-" + name + "\"></icon>"
                     + "<div class=\"description\"><span>" + name + "</span>"
                     + "<span>0x" + parseInt(code).toString(16) + "</span></div>";
                 return node;
@@ -34,15 +34,17 @@
     "59658": "exit_fullscreen",
     "59659": "fullscreen",
     "59660": "help",
-    "59661": "more",
-    "59662": "more-vertical",
-    "59663": "play",
-    "59664": "power",
-    "59665": "settings",
-    "59666": "stop",
-    "59667": "warning"
+    "59661": "monitor",
+    "59662": "monitor-screenshot",
+    "59663": "more",
+    "59664": "more-vertical",
+    "59665": "play",
+    "59666": "power",
+    "59667": "settings",
+    "59668": "stop",
+    "59669": "warning"
 };
-            var prefix = "fonticons";
+            var prefix = "font";
             document.addEventListener("DOMContentLoaded", function() {
                 var container = document.getElementById("container");
                 for (var key of Object.keys(data)) {
@@ -52,7 +54,7 @@
         </script>
     </head>
     <body>
-        <h3>FONTICONS - Font Icons</h3>
+        <h3>FONT - Font Icons</h3>
         <hr/>
         <div id="container"></div>
     </body>

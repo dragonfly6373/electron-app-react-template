@@ -1,0 +1,93 @@
+@font-face {
+    font-family: 'font-icons';
+    src: url('./font-icons.eot');
+    src: url('./font-icons.eot?#iefix') format('embedded-opentype'),
+    url('./font-icons.woff2') format('woff2'), 
+    url('./font-icons.woff') format('woff'),
+    url('./font-icons.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+[class^="icon-"], [class*=" icon-"] {
+    font-family: 'font-icons' !important;
+    speak: none;
+    position: relative;
+    display: inline-block;
+    font-style: normal;
+    font-weight: 400;
+    -webkit-font-smoothing: antialiased;
+    width: 1em;
+    text-align: center;
+    vertical-align: middle;
+
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+.icon-about:before {
+    content: "\e900";
+}
+.icon-account-cog:before {
+    content: "\e901";
+}
+.icon-add:before {
+    content: "\e902";
+}
+.icon-check:before {
+    content: "\e903";
+}
+.icon-checkmark:before {
+    content: "\e904";
+}
+.icon-chevron-left:before {
+    content: "\e905";
+}
+.icon-chevron-right:before {
+    content: "\e906";
+}
+.icon-circle_close:before {
+    content: "\e907";
+}
+.icon-close:before {
+    content: "\e908";
+}
+.icon-delete:before {
+    content: "\e909";
+}
+.icon-exit_fullscreen:before {
+    content: "\e90a";
+}
+.icon-fullscreen:before {
+    content: "\e90b";
+}
+.icon-help:before {
+    content: "\e90c";
+}
+.icon-monitor:before {
+    content: "\e90d";
+}
+.icon-monitor-screenshot:before {
+    content: "\e90e";
+}
+.icon-more:before {
+    content: "\e90f";
+}
+.icon-more-vertical:before {
+    content: "\e910";
+}
+.icon-play:before {
+    content: "\e911";
+}
+.icon-power:before {
+    content: "\e912";
+}
+.icon-settings:before {
+    content: "\e913";
+}
+.icon-stop:before {
+    content: "\e914";
+}
+.icon-warning:before {
+    content: "\e915";
+}
+                    

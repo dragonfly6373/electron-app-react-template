@@ -9,5 +9,5 @@ type InputProps = {
 } & HTMLAttributes<HTMLSpanElement>;
 
 export function Icon(props: InputProps) {
-  return <Container className={"icon fonticons-" + props.type} />
+  return <Container className={"icon icon-" + props.type} />
 }
