@@ -16,6 +16,7 @@ const Wrapper = styled.section`
         & .main {
             display: flex;
             flex-flow: column;
+            width: 22em;
             box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
             background-color: #FFF;
             border-radius: 0.25em;
@@ -45,16 +46,18 @@ const Wrapper = styled.section`
     .footer { border-top: 1px solid #DDD; }
     .body {
         flex: 1 auto;
-        padding: 0.6em;
+        padding: 1em;
         overflow: auto;
         & .input-group {
             display: flex;
             align-items: center;
             & > label {
-                flex: 1 auto;
-                padding-right: 1em;
+                padding-right: 0.5em;
                 line-height: 2;
             }
+        }
+        & .description {
+            line-height: 1.5;
         }
     }
 `;
@@ -64,6 +67,7 @@ export default function AboutModal( options: { onClose: Function }) {
     
     const {
         name,
+        title,
         version,
         copyright,
         description
@@ -79,12 +83,13 @@ export default function AboutModal( options: { onClose: Function }) {
                 </Button>
             </div>
             <div className="body">
-                <h3>{name}</h3>
+                <h2>{title}</h2>
                 <div className="input-group">
-                    <label>{version}</label>
+                    <label>Version:</label>
+                    <em>{version}</em>
                 </div>
                 <div className="description">{description}</div>
-                <div className="license">
+                <div className="input-group">
                     <span>{copyright}</span>
                 </div>
             </div>

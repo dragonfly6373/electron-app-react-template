@@ -1,6 +1,8 @@
 import { useSelector } from "react-redux";
 import { getAppLog } from "../store/AppLog";
 import styled from "styled-components";
+import { Button } from "../widgets/Button";
+import { Icon } from "../widgets/Icon";
 
 const Wrapper = styled.section`
   .container {
@@ -11,15 +13,17 @@ const Wrapper = styled.section`
         padding: 0.2em 0.4em;
         border-bottom: 1px dashed #2D2D2D;
         position: relative;
-        & .log-time {
-            display: none;
+        & .show-more {
+            display: flex;
+            align-items: center;
+            visibility: hidden;
             position: absolute;
             right: 0.2em;
             top: 0.2em;
             filter: brightness(0.6);
         }
-        &:hover .log-time {
-            display: block;
+        &:hover .show-more {
+            visibility: visible;
         }
     }
     & .log-type {
@@ -50,7 +54,14 @@ export default function() {
                 return (<div className="flex-row log-item" key={i}>
                     <div className={`log-type ${log.type}`}>{log.type}</div>
                     <div className="log-content">{String(log.content)}</div>
-                    <div className="log-time">{new Date(log.time).toString().slice(16, 24)}</div>
+                    <div className="show-more">
+                        <div className="log-time">{new Date(log.time).toString().slice(16, 24)}</div>
+                        <Button title="copy"
+                            className="sm square default"
+                            onClick={() => { navigator.clipboard.writeText(log.content); }}>
+                                <Icon type="copy"/>
+                            </Button>
+                    </div>
                 </div>);
             })}
         </div>

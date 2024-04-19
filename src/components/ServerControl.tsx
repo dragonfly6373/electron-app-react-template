@@ -4,9 +4,10 @@ import styled from 'styled-components'
 import { Button } from '../widgets/Button'
 import { AppStatus, getAppStatus, updateStatus } from '../store/AppStatus'
 import SettingModal from './SettingModal'
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { Icon } from '../widgets/Icon'
 import AboutModal from './AboutModal'
+import { Popup } from '../widgets/Popup'
 
 const Wrapper = styled.section`
   & .status {
@@ -40,6 +41,9 @@ export default function ServerControl() {
 
   const [isShowSettingModal, showSettingModal] = useState(false);
   const [isShowAboutModal, showAboutModal] = useState(false);
+  const [isShowMenuSetting, showMenuSetting] = useState(false);
+
+  const btnMenuRef = useRef(null);
 
   function startStopServer() {
     window.ipc.sendMessage(
@@ -61,7 +65,6 @@ export default function ServerControl() {
       clientUrl: string
     } | null,
   ) {
-    console.log('update app settings:', settings);
     if (settings) {
       window.ipc.sendMessage(
         JSON.stringify({ event: 'config', data: settings }),
@@ -92,17 +95,34 @@ export default function ServerControl() {
 
       <div className="button-group">
         <Button title="open web client"
-          className="md icon circle primary"
+          className="md icon circle success"
           onClick={() => openWebClient()}
         >
           <Icon type="monitor-screenshot" />
         </Button>
-        <Button title="settings"
+        <Button ref={btnMenuRef} title="settings"
           className="md icon circle primary"
           onClick={() => showSettingModal(true)}
         >
           <Icon type="settings" />
         </Button>
+        <Button ref={btnMenuRef} title="about"
+          className="md icon circle"
+          onClick={() => showAboutModal(true)}
+        >
+          <Icon type="about" />
+        </Button>
+        {isShowMenuSetting ? <Popup for={btnMenuRef.current}
+          position='auto'
+          type='default'
+          autoHide={true}
+          onHide={() => {}}
+        >
+          <ul className="menu">
+            <li className="menu-item">Settings</li>
+            <li className="menu-item">About</li>
+          </ul>
+        </Popup> : null}
       </div>
       {isShowSettingModal ? <SettingModal onClose={updateAppSetting} /> : null}
       {isShowAboutModal ? <AboutModal onClose={() => showAboutModal(false)} /> : null}

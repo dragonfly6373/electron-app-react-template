@@ -4,7 +4,15 @@ Boilerplate for a project using Electron, React and Typescript.
 
 ## Installation
 
+```
+sudo dnf update -y
+sudo dnf install mono-devel -y
+sudo dnf install nuget nuget-devel -y
+```
+
 Use a package manager of your choice (npm, yarn, etc.) in order to install all dependencies
+
+> npm install --legacy-peer-deps
 
 ```bash
 export PUPPETEER_SKIP_DOWNLOAD='true'
@@ -17,7 +25,7 @@ Detail installation
 
 ```bash
 # install required dependencies
-npm install @reduxjs/toolkit dotenv puppeteer react react-dom react-hot-loader react-redux react-router-dom styled-components
+npm install @reduxjs/toolkit dotenv react react-dom react-hot-loader react-redux react-router-dom styled-components
 
 # install electron dev-tools dependencies
 npm install -D typescript file-loader @types/electron-devtools-installer @types/jest @types/react @types/react-dom @types/styled-components

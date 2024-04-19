@@ -2,6 +2,7 @@
   "name": "electron-server",
   "author": "Nguyen Dang",
   "version": "2.0.0",
+  "title": "Electron Server",
   "copyright": "Copyright Internet Systems Consortium (ISC) © 2024",
   "description": "An Electron boilerplate including TypeScript, HTTP Server, React, Jest and ESLint.",
   "main": ".webpack/main",
@@ -11,6 +12,8 @@
     "package": "electron-forge package",
     "make": "electron-forge make",
     "release": "electron-forge publish",
+    "package:window": "electron-forge package --platform win32",
+    "release:window": "electron-forge make --platform win32",
     "lint": "eslint . --ext js,ts",
     "test": "jest"
   },
@@ -39,6 +42,7 @@
     "@electron-forge/maker-deb": "^7.3.1",
     "@electron-forge/maker-rpm": "^7.3.1",
     "@electron-forge/maker-squirrel": "^7.3.1",
+    "@electron-forge/maker-wix": "^7.4.0",
     "@electron-forge/maker-zip": "^7.3.1",
     "@electron-forge/plugin-webpack": "^7.3.1",
     "@electron/rebuild": "^3.6.0",
@@ -58,6 +62,7 @@
     "copy-webpack-plugin": "^12.0.2",
     "cross-env": "^7.0.3",
     "electron": "^29.1.6",
+    "electron-prebuilt-compile": "^8.2.0",
     "eslint": "^8.57.0",
     "eslint-config-prettier": "^9.1.0",
     "eslint-config-standard": "^17.1.0",
@@ -95,7 +100,7 @@
               "entryPoints": [
                 {
                   "html": "./public/index.html",
-                  "css": "./public/fonts/fonticons-icons.css",
+                  "css": "./assets/fonts/font-icons.css",
                   "js": "./src/index.tsx",
                   "name": "main_window",
                   "preload": {
@@ -111,7 +116,9 @@
         {
           "name": "@electron-forge/maker-squirrel",
           "config": {
-            "name": "Electron Server"
+            "name": "ElectronServer",
+            "authors": "Nguyen Dang",
+            "description": "iQMS KIOSK server controller read Social Identity Card, parse customer data and print ticket number."
           }
         },
         {

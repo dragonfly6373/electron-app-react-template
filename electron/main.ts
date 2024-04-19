@@ -169,13 +169,13 @@ class Main {
     this.httpServer?.start(port, () => {
       this.logger.info(`server is running on port: ${port}`);
       this.ipcSendMessage({ event: IpcEvents.APP_INFO, data: { isRunning: this.httpServer?.isRunning() || false, configs: configService.getAppConfig() } });
-      if (this.appSettings?.autoOpenClient) {
-        this.openChromeTab(this.appSettings.clientUrl || DEFAULT_CLIENT_URL);
-      }
+      // if (this.appSettings?.autoOpenClient) {
+      //   this.openChromeTab(this.appSettings.clientUrl || DEFAULT_CLIENT_URL);
+      // }
     });
     this.httpServer?.addListener(IpcEvents.POST, (data) => {
-      this.logger.info("[REQUES] post data", data);
-      this.openChromeTab('https://docs.fedoraproject.org/en-US/fedora/latest/');
+      this.logger.info("[REQUES] post data", JSON.stringify(data));
+      this.openChromeTab(`${this.appSettings?.clientUrl || DEFAULT_CLIENT_URL}`);
     });
     this.httpServer?.addListener(IpcEvents.STOP, (data) => {
       this.logger.warn(`[HTTP] Event.${IpcEvents.STOP}`);
@@ -197,9 +197,12 @@ class Main {
 
 
   async registerListeners () {
-    const settings = configService.getAppConfig();
-    if (settings.autoStartServer) {
-      this.startServer(settings.serverPort);
+    // const settings = configService.getAppConfig();
+    if (this.appSettings?.autoStartServer) {
+      this.startServer(this.appSettings.serverPort);
+    }
+    if (this.appSettings?.autoOpenClient) {
+      this.openChromeTab(this.appSettings.clientUrl || DEFAULT_CLIENT_URL);
     }
     /**
      * This comes from bridge integration, check bridge.ts
@@ -245,10 +248,10 @@ class Main {
       if (exitCode) this.logger.error("uncaughtErrorHandler", options, exitCode);
       if (options.cleanup) {
         if (this.webView?.isClosable()) this.webView?.close();
-        this.logger.info('cleanup application');
+        console.log('cleanup application');
       }
     } catch(error: any) {
-      this.logger.error("kill all child processes failed with error", error.message);
+      console.error("kill all child processes failed with error", error.message);
     } finally {
       if (exitCode || exitCode === 0) console.log(exitCode);
       if (options.exit) process.exit();
